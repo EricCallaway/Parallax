@@ -1,0 +1,28 @@
+project:
+  name: your-project-name
+  version: 1.0.0
+
+dependencies:
+  runtime:
+    node: ">=22.13.1"
+    npm: ">=10.0.0"
+
+  backend:
+    express: "^4.x.x"
+    mongodb: "^6.x.x"
+    mongoose: "^8.x.x"
+
+  development:
+    nodemon: "^3.x.x"
+    eslint: "^8.x.x"
+    jest: "^29.x.x"
+
+  optional:
+    - typescript
+    - swagger-ui
+
+environment:
+  recommended:
+    - node
+    - mongodb
+    - npm
