@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .stock-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+        .price-display {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        .change-badge {
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #495057;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .buy-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .chart-placeholder {
+            background: #e9ecef;
+            height: 300px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <div class="stock-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/stocks" class="text-white">Stocks</a></li>
+                            <li class="breadcrumb-item active text-white" aria-current="page"><%= stock.symbol %></li>
+                        </ol>
+                    </nav>
+                    <h1 class="mb-2"><%= stock.symbol %></h1>
+                    <h4 class="mb-3"><%= stock.name %></h4>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="price-display"><%= stock.getFormattedPrice() %></div>
+                    <span class="badge <%= stock.getChangeColorClass() == 'text-success' ? 'bg-success' : stock.getChangeColorClass() == 'text-danger' ? 'bg-danger' : 'bg-secondary' %> change-badge">
+                        <%= stock.getFormattedChange() %> (<%= stock.changePercent %>%)
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Stock Chart Placeholder -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Price Chart</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-placeholder">
+                            <div class="text-center">
+                                <i class="fas fa-chart-area fa-3x mb-3"></i>
+                                <p>Interactive chart would be displayed here</p>
+                                <small>In a real application, this would show historical price data</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Company Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value"><%= stock.symbol %></div>
+                                <div class="stat-label">Symbol</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value"><%= stock.name %></div>
+                                <div class="stat-label">Company Name</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value"><%= stock.volume.toLocaleString() %></div>
+                                <div class="stat-label">Volume</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">$<%= (stock.marketCap / 1000000000).toFixed(1) %>B</div>
+                                <div class="stat-label">Market Cap</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent News Placeholder -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-newspaper me-2"></i>Recent News</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-newspaper fa-2x mb-3"></i>
+                            <p>Company news and updates would appear here</p>
+                            <small>In a real application, this would show recent news articles</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Buy Stock Section -->
+                <div class="buy-section">
+                    <h4 class="mb-3"><i class="fas fa-shopping-cart me-2"></i>Buy Stock</h4>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Current Price</label>
+                        <div class="h4 text-primary"><%= stock.getFormattedPrice() %></div>
+                    </div>
+
+                    <form id="buyStockForm">
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control form-control-lg" id="quantity" 
+                                   min="1" value="1" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="totalCost" class="form-label">Total Cost</label>
+                            <div class="h4 text-success" id="totalCost">$<%= stock.price.toFixed(2) %></div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="button" class="btn btn-success btn-lg" onclick="confirmPurchase()">
+                                <i class="fas fa-check me-2"></i>Confirm Purchase
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <!-- Quick Actions -->
+                    <h6 class="mb-3">Quick Actions</h6>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="addToWatchlist()">
+                            <i class="fas fa-eye me-2"></i>Add to Watchlist
+                        </button>
+                        <button class="btn btn-outline-info" onclick="setPriceAlert()">
+                            <i class="fas fa-bell me-2"></i>Set Price Alert
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="shareStock()">
+                            <i class="fas fa-share me-2"></i>Share
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Market Summary -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Market Summary</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="h6 text-success">+<%= stock.changePercent %>%</div>
+                                <small class="text-muted">Today</small>
+                            </div>
+                            <div class="col-6">
+                                <div class="h6"><%= stock.volume.toLocaleString() %></div>
+                                <small class="text-muted">Volume</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Purchase Successful!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h5>Stock Purchase Confirmed</h5>
+                        <p class="text-muted">Your order has been processed successfully.</p>
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>Order Details:</strong><br>
+                        <span id="orderDetails"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="/stocks" class="btn btn-primary">View All Stocks</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const stockSymbol = '<%= stock.symbol %>';
+        const stockPrice = <%= stock.price %>;
+
+        // Calculate total cost as quantity changes
+        document.getElementById('quantity').addEventListener('input', function() {
+            const quantity = parseInt(this.value) || 0;
+            const totalCost = quantity * stockPrice;
+            document.getElementById('totalCost').textContent = `$${totalCost.toFixed(2)}`;
+        });
+
+        function confirmPurchase() {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            
+            if (!quantity || quantity <= 0) {
+                alert('Please enter a valid quantity');
+                return;
+            }
+
+            const totalCost = quantity * stockPrice;
+
+            fetch(`/stocks/${stockSymbol}/buy`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ quantity, price: stockPrice })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success modal
+                    document.getElementById('orderDetails').innerHTML = `
+                        <strong>${stockSymbol}</strong><br>
+                        Quantity: ${quantity} shares<br>
+                        Price per share: $${stockPrice.toFixed(2)}<br>
+                        Total cost: $${totalCost.toFixed(2)}<br>
+                        Date: ${new Date().toLocaleDateString()}
+                    `;
+                    
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing your purchase');
+            });
+        }
+
+        function addToWatchlist() {
+            alert('Watchlist functionality would be implemented here');
+        }
+
+        function setPriceAlert() {
+            alert('Price alert functionality would be implemented here');
+        }
+
+        function shareStock() {
+            if (navigator.share) {
+                navigator.share({
+                    title: `${stockSymbol} Stock`,
+                    text: `Check out ${stockSymbol} stock at $${stockPrice.toFixed(2)}`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+            }
+        }
+    </script>
+</body>
+</html>
